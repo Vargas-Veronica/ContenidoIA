@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storytelling Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Storytelling Generator</h1>
+  <form id="story-form">
+    <input type="text" id="brand" placeholder="Brand" required>
+    <select id="tone">
+      <option value="creative">Creative</option>
+      <option value="dark">Dark</option>
+      <option value="funny">Funny</option>
+      <option value="romantic">Romantic</option>
+      <option value="melancholic">Melancholic</option>
+      <option value="inspirational">Inspirational</option>
+    </select>
+    <input type="file" id="image" required>
+    <button type="submit">Generate Story</button>
+  </form>
+  <div id="story-result">
+    <h2>Generated Story</h2>
+    <p id="story-text"></p>
+  </div>
+
+  <input type="text" id="inputText" placeholder="nombre de tu marca">
+  <button id="generateButton">Generar</button>
+  <p id="responseText"></p>
+  <img id="selectedImage" src="" alt="Imagen seleccionada" style="max-width: 300px; display: none;">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+</script>
+  <script type="module" src="script.js"></script>
+ 
+</body>
+</html>

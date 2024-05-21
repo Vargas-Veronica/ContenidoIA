@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../front/styles.css">
+    <title> API Google Gemini</title>
+</head>
+<body>
+
+    <input type="text" id="inputText" placeholder="Escribe algo aquí...">
+
+    <button id="generateButton">Generar</button>
+    <p id="responseText"></p>
+
+    <form id="form" method="POST" action="#" enctype="multipart/form-data">
+        <h1>Crea tu historia</h1>
+
+       
+    <label for="picture">
+
+    <input type="file" class="generateButton"   name="" id="">
+</label>
+
+        
+        <div class="input">
+            <label for="productName">Nombre del producto</label>
+            <input class="estiloInput ">   
+            <span id="nameErrors"></span>             
+            <small class="text-danger ms-2"></small>
+        </div>
+       
+        
+        <div class="div_file">
+            <div class="file">
+                <p class="texto">Cargar imagen</p>
+                <input class="productPhoto " type="file"   id="productPhoto" name="productPhoto"  placeholder="Foto del producto">
+            </div>
+        </div>
+        <small class="text-danger ms-2"></small>
+        <span id="imageErrors"></span> 
+        <div class="input">
+            <label for="description">Descripción del producto</label>
+            <textarea id="description" name="description" class="estiloInput"> </textarea>
+           
+        
+        
+        
+
+        <div class="boton">
+            <span class="mensajeError"> Debe completar todos los campos</span>
+            <button type="submit" class="registrar">Crear copy</button>
+        </div>       
+        <span id="submitErrors"></span>
+    </form>
+</div>
+    <script type="importmap">
+        {
+          "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
+        }
+    </script>
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // Reemplaza 'YOUR_API_KEY' con tu clave de API real
+        const API_KEY = 'AIzaSyDdrpgwx_Sqxwx4Yhrb4Nx0N90KnQJHp9U';
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        document.getElementById('generateButton').addEventListener('click', async () => {
+            const inputText = document.getElementById('inputText').value;
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest"});
+            const prompt = inputText;
+
+            try {
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                document.getElementById('responseText').innerText = response.text();
+            } catch (error) {
+                console.error('Error al generar contenido:', error);
+            }
+        });
+    </script>
+    <script src="index.js"></script>
+</body>
+</html>

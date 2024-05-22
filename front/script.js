@@ -1,4 +1,4 @@
-document.getElementById('story-form').addEventListener('submit', async (event) => {
+/*document.getElementById('story-form').addEventListener('submit', async (event) => {
     event.preventDefault();
   
     const brand = document.getElementById('brand').value;
@@ -50,3 +50,4 @@ document.getElementById('story-form').addEventListener('submit', async (event) =
         console.error('Error al generar contenido:', error);
     }
 });
+*/

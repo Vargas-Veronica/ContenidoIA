@@ -81,6 +81,26 @@
             }
         });
     </script>
+    <script>
+    document.getElementById('generateButton').addEventListener('click', async () => {
+        const inputText = document.getElementById('inputText').value;
+        const pictureInput = document.getElementById('picture');
+        const formData = new FormData();
+        formData.append('inputText', inputText);
+        formData.append('picture', pictureInput.files[0]);
+
+        try {
+            const response = await fetch('./uploads', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            document.getElementById('responseText').innerText = data.description;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+</script>
     <script src="index.js"></script>
 </body>
 </html>

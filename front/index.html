@@ -1,44 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Storytelling Generator</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../front/styles.css">
+    <title>Generador de Historias</title>
 </head>
 <body>
-  <h1>Storytelling Generator</h1>
-  <form id="story-form">
-    <input type="text" id="brand" placeholder="Brand" required>
-    <select id="tone">
-      <option value="creative">Creative</option>
-      <option value="dark">Dark</option>
-      <option value="funny">Funny</option>
-      <option value="romantic">Romantic</option>
-      <option value="melancholic">Melancholic</option>
-      <option value="inspirational">Inspirational</option>
-    </select>
-    <input type="file" id="image" required>
-    <button type="submit">Generate Story</button>
-  </form>
-  <div id="story-result">
-    <h2>Generated Story</h2>
+    <form id="story-form" method="POST" enctype="multipart/form-data">
+        <h1>Crea tu historia</h1>
+        <label for="brand">Marca:</label>
+        <input type="text" id="brand" name="brand" required>
+        <label for="tone">Tono:</label>
+        <input type="text" id="tone" name="tone" required>
+        <label for="image">Imagen:</label>
+        <input type="file" id="image" name="image" required>
+        <button type="submit">Generar Historia</button>
+    </form>
     <p id="story-text"></p>
-  </div>
 
-  <input type="text" id="inputText" placeholder="nombre de tu marca">
-  <button id="generateButton">Generar</button>
-  <p id="responseText"></p>
-  <img id="selectedImage" src="" alt="Imagen seleccionada" style="max-width: 300px; display: none;">
+    <input type="text" id="inputText" placeholder="Escribe algo aquí...">
+    <button id="generateButton">Generar</button>
+    <p id="responseText"></p>
+    <img id="selectedImage" style="display:none;" alt="Imagen seleccionada">
 
-  <script type="importmap">
-    {
-      "imports": {
-        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    <script>
+        document.getElementById('story-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const brand = document.getElementById('brand').value;
+            const tone = document.getElementById('tone').value;
+            const image = document.getElementById('image').files[0];
+
+            console.log('Form submitted with values:', { brand, tone, image });
+
+            const formData = new FormData();
+            formData.append('brand', brand);
+            formData.append('tone', tone);
+            formData.append('image', image);
+
+            try {
+                const response = await fetch('http://localhost:3000/generate-story', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                console.log('Response from /generate-story:', response);
+
+                const result = await response.json();
+                console.log('Result from /generate-story:', result);
+                document.getElementById('story-text').innerText = result.story;
+            } catch (error) {
+                console.error('Error generating story:', error);
+            }
+        });
+
+        document.getElementById('generateButton').addEventListener('click', async () => {
+            const inputText = document.getElementById('inputText').value;
+            console.log('Generating content with input:', inputText);
+
+            try {
+                const response = await fetch('http://localhost:3000/generate-content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ inputText })
+                });
+
+                console.log('Response from /generate-content:', response);
+
+                const data = await response.json();
+                console.log('Data from /generate-content:', data);
+                document.getElementById('responseText').innerText = data.text;
+
+                if (data.imageURL) {
+                    document.getElementById('selectedImage').src = data.imageURL;
+                    document.getElementById('selectedImage').style.display = 'block';
+
+                    const imageDescriptionResponse = await fetch('http://localhost:3000/describe-image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageURL: data.imageURL })
+                    });
+
+                    console.log('Response from /describe-image:', imageDescriptionResponse);
+
+                    const imageData = await imageDescriptionResponse.json();
+                    console.log('Image data from /describe-image:', imageData);
+                    document.getElementById('responseText').innerText += '\nDescripción de la imagen: ' + imageData.description;
+                }
+            } catch (error) {
+                console.error('Error al generar contenido:', error);
+            }
+        });
+    </script>
+    <script type="importmap">
+      {
+          "imports": {
+              "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
       }
-    }
-</script>
-  <script type="module" src="script.js"></script>
- 
+      </script>
+      <script type="module">
+          import { GoogleGenerativeAI } from "@google/generative-ai";
+      
+          // Reemplaza 'YOUR_API_KEY' con tu clave de API real
+          const API_KEY = 'AIzaSyDdrpgwx_Sqxwx4Yhrb4Nx0N90KnQJHp9U'; // Asegúrate de reemplazar esto con tu clave real
+          const genAI = new GoogleGenerativeAI(API_KEY);
+      
+          document.getElementById('generateButton').addEventListener('click', async () => {
+              const inputText = document.getElementById('inputText').value;
+              const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest"});
+              const prompt = inputText;
+      
+              try {
+                  const result = await model.generateContent(prompt);
+                  document.getElementById('responseText').innerText = result.text;
+              } catch (error) {
+                  console.error('Error al generar contenido:', error);
+                  document.getElementById('responseText').innerText = 'Error al generar contenido.';
+              }
+          });
+      </script>
+      
 </body>
 </html>
